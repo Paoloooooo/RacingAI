@@ -1,3 +1,7 @@
 pyglet == 1.5.29
 numpy
 pillow
+pytorch 
+torchvision 
+torchaudio 
+pytorch-cuda == 12.1
