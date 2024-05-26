@@ -3,5 +3,5 @@ __pycache__
 *.pyc
 
 # IDE stuff
-.idea
-.code-workspace
+*.idea
+*.code-workspace
