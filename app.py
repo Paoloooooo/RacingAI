@@ -4,19 +4,21 @@ from pyglet.gl import *
 from pyglet.window import key
 
 from numpy import loadtxt, empty
-from os import listdir
+import os
 import json
 
-from graphics import Graphics
-from core import Simulation, index_loop
-from neural_network import NeuralNetwork
+from constants import TILES_PATH, CARS_PATH, ASSETS_PATH, FONTS_PATH
 
-from evolution import Evolution, Entity
-from core import Track
+from game.graphics import Graphics
+from game.core import Simulation, Track
+from game.menu import SettingsMenu
+from game.messages import *
+from game.tiles import TileManager
+from models.neural_network import NeuralNetwork
 
-from menu import SettingsMenu
-from messages import *
-from tiles import TileManager
+from models.evolution import Evolution, Entity
+
+
 
 # load .json file
 def load_json(directory):
@@ -36,7 +38,7 @@ def save_json(directory,data):
 # save nn as a .json file
 def save_neural_network(name, weights, settings, folder="saves"):
     # get name
-    savefiles = listdir(folder)
+    savefiles = os.listdir(folder)
     savename = name
     name_count = 0
     while savename + ".json" in savefiles:
@@ -61,14 +63,14 @@ class App:
 
         ### INIT WINDOW ###
         self.window = pyglet.window.Window(fullscreen=False, resizable=True)
-        self.window.set_caption("NEURAL NETWORK RACING by Tomas Brezina")
+        self.window.set_caption('Racing AI')
         if not self.window.fullscreen: self.window.set_size(settings["width"], settings["height"])
         self.window.set_minimum_size(400, 200)
         self.init_gl()
 
         ### LOAD ICON ###
         try:
-            icon = pyglet.image.load("graphics/icon.ico")
+            icon = pyglet.image.load(os.path.join(ASSETS_PATH,'icon.ico'))
             self.window.set_icon(icon)
         except:
             print("Error >>> Loading icon")
@@ -79,11 +81,11 @@ class App:
         self.simulation = Simulation()
         self.evolution = Evolution()
         self.evolution.mutation_rate = self.settings["mutation_rate"]
-        self.graphics = Graphics(self.window.width, self.window.height)
+        self.graphics = Graphics(self.window.width, self.window.height, CARS_PATH, FONTS_PATH)
 
         ### TRACK MANAGER ###
         self.tile_manager = TileManager()
-        self.tile_manager.load_tiles(root_dir="tiles")
+        self.tile_manager.load_tiles(root_dir=TILES_PATH)
 
         ### LABELS ###
         self.graphics.hud.labels["name"].text = ""
@@ -200,7 +202,7 @@ class App:
             new_ind = self.simulation.cars.index(self.camera_selected_car)
             while True:
                 new_ind -= step
-                self.camera_selected_car = self.simulation.cars[index_loop(new_ind, len(self.simulation.cars))]
+                self.camera_selected_car = self.simulation.cars[new_ind % len(self.simulation.cars)]
                 if self.camera_selected_car.active: break
 
     # when closed (unnecessary)

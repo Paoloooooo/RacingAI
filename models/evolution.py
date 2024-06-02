@@ -1,8 +1,7 @@
-from neural_network import NeuralNetwork
-from core import index_loop
+from models.neural_network import NeuralNetwork
 from os import listdir
 import json
-from objects import Result
+from models.objects import Result
 
 
 class Entity:
@@ -127,7 +126,7 @@ class Evolution:
         return self.get_new_generation([nn], population)
 
     def get_new_generation(self, nns: [NeuralNetwork], population: int):
-        return [nns[index_loop(i, len(nns))].reproduce(self.mutation_rate) for i in range(population)]
+        return [nns[i % len(nns)].reproduce(self.mutation_rate) for i in range(population)]
 
     def get_new_generation_from_results(self, results: [Result], population: int, to_add_count=3):
         best_nns = []

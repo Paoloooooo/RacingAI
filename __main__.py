@@ -16,15 +16,15 @@ Run command:
 pip install -r requirements.txt
 """
 
-from messages import ask_load_nn, ask_yes_no
+from game.messages import ask_load_nn, ask_yes_no
 from app import App, load_json
-from evolution import Evolution, Entity
+from models.evolution import Evolution, Entity
 
 # simulation settings
-settings = load_json("config.json")
+settings = load_json("configs/config.json")
 entity = Entity()
 
-SAVE_FILE = False
+SAVE_FILE = None
 if ask_yes_no(title="Start",message="Load saved NN?"):
     SAVE_FILE = ask_load_nn("saves")
 
@@ -33,9 +33,9 @@ if SAVE_FILE:
     entity.load_file(SAVE_FILE)
 else:
     # create new neural network
-    nn_stg = load_json("default_nn_config.json")
+    nn_stg = load_json("configs/default_nn_config.json")
     entity.set_parameters_from_dict(nn_stg)
-    entity.nn = entity.get_random_nn();
+    entity.nn = entity.get_random_nn()
 
 # window
 app = App(settings)

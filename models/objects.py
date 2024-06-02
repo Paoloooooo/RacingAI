@@ -1,4 +1,4 @@
-from neural_network import NeuralNetwork
+from models.neural_network import NeuralNetwork
 
 class Result:
     def __init__(self,

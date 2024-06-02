@@ -4,10 +4,10 @@ import pyglet
 
 import numpy as np
 from numpy import cos,sin,radians,sqrt,ones
-from neural_network import NeuralNetwork
-from graphics import CarInfo, CarLabel
+from models.neural_network import NeuralNetwork
+from .graphics import CarInfo, CarLabel
 
-from objects import Result
+from models.objects import Result
 
 
 # finds intersection between two LINE SEGMENTS
@@ -44,9 +44,6 @@ def angle_between(p0,p1):
     diffy = p0[1] - p1[1]
     return 270 - np.degrees(np.arctan2(diffx, diffy))
 
-def index_loop(ind, len):
-    return ind % len if ind >= len else ind
-
 """
 Core of simulation.
 """
@@ -61,7 +58,7 @@ class Simulation:
     def generate_cars_from_nns(self, nns, parameters, images, batch, labels_batch=None):
         self.cars = []
         for i in range(len(nns)):
-            name, image = images[index_loop(i, len(images))]
+            name, image = images[i % len(images)]
             sprite = pyglet.sprite.Sprite(image, batch=batch)
             label = CarLabel(name="TST", batch=labels_batch)
             pos = (*self.track.cps_arr[self.track.spawn_index], self.track.spawn_angle)
@@ -92,8 +89,8 @@ class Simulation:
                 score=car.score,
                 dist_to_next_cp=dist_between(
                     (car.xpos, car.ypos),
-                    self.track.cps_arr[index_loop(
-                            car.score + self.track.spawn_index + 1,
+                    self.track.cps_arr[(
+                            car.score + self.track.spawn_index + 1 %
                             len(self.track.cps_arr)
                     )]
                 )
@@ -113,9 +110,9 @@ class Simulation:
     # debug
     def get_car_cp_lines(self, car):
         lines_arr = []
-        check_ind = index_loop(car.score + self.track.spawn_index, len(self.track.cps_arr))
+        check_ind = car.score + self.track.spawn_index % len(self.track.cps_arr)
         for plus in self.checkpoint_range:
-            current_check_ind = index_loop(check_ind + plus, len(self.track.cps_arr))
+            current_check_ind = check_ind + plus % len(self.track.cps_arr)
             lines = self.track.lines_arr[current_check_ind]
             lines_arr.append(lines)
         return lines_arr
@@ -128,7 +125,7 @@ class Simulation:
 
         # index of cp on which car currently is
         cps_length = len(self.track.cps_arr)
-        check_ind = index_loop(car.score + self.track.spawn_index, cps_length)
+        check_ind = car.score + self.track.spawn_index % cps_length
 
         # sensors index loop
         for sen_ind in range(car.sensors.shape[0]):
@@ -144,7 +141,7 @@ class Simulation:
             # 1 = next cp
             for plus in self.checkpoint_range:
                 # current cp
-                cp_ind = index_loop(check_ind + plus, cps_length)
+                cp_ind = (check_ind + plus) % cps_length
                 if cp_ind < 0: cp_ind += cps_length
                 # line segment which belongs to current cp
                 lines = self.track.lines_arr[cp_ind]
@@ -172,7 +169,7 @@ class Simulation:
     # check if car is on next checkpoint
     # checkpoint are sorted in a loop so it is only looking for the next cp
     def update_car_checkpoint(self, car):
-        index = index_loop(car.score + self.track.spawn_index, len(self.track.cps_arr))
+        index = car.score + self.track.spawn_index % len(self.track.cps_arr)
         checkpoint = self.track.cps_arr[index]  # next checkpoint
         dist = dist_between((car.xpos, car.ypos), checkpoint)
         if (dist < 120):

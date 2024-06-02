@@ -3,6 +3,7 @@
 import pyglet
 from pyglet.gl import *
 import numpy as np
+import os
 
 # colors
 WHITE = (255,255,255,255)
@@ -11,6 +12,7 @@ RED = (204, 0, 0, 255)
 GRAY = (128, 128, 128, 255)
 
 # car images
+# TODO: understand what are those numbers
 racers_info = {
     "alfaromeo" : ["alfaromeo.png", (0,0,0,255)],
     "alphatauri" : ["alphatauri.png",(0,0,170,255)],
@@ -118,13 +120,13 @@ class Camera:
 
 
 class HUD:
-    def __init__(self, width, height):
+    def __init__(self, width, height, font_path):
         self.width = width
         self.height = height
 
         try:
-            pyglet.font.add_file("graphics/Comfortaa-Bold.ttf")
-            pyglet.font.add_file("graphics/Comfortaa-Regular.ttf")
+            pyglet.font.add_file(os.path.join(font_path,'Comfortaa-Bold.ttf'))
+            pyglet.font.add_file(os.path.join(font_path,'Comfortaa-Regular.ttf'))
         except:
             print("Error >> loading font")
 
@@ -177,19 +179,19 @@ class HUD:
         pass
 
 class Graphics:
-    def __init__(self, width, height):
+    def __init__(self, width, height, car_path, font_path):
         self.car_batch = pyglet.graphics.Batch()
         self.car_labels_batch = pyglet.graphics.Batch()
 
         self.car_images = []
         for name in racers_info:
-            self.car_images.append((name, self.load_car_image("graphics/cars/"+racers_info[name][0])))
+            self.car_images.append((name, self.load_car_image(os.path.join(car_path,racers_info[name][0]))))
 
         self.width = width
         self.height = height
 
         # MODULES
-        self.hud = HUD(width, height)
+        self.hud = HUD(width, height, font_path)
         self.camera = Camera(width, height)
 
     def draw_grid(self):

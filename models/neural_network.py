@@ -6,7 +6,7 @@ import numpy as np
 def sigmoid(x):
   return 1 / (1 + np.exp(-x))
 
-
+# TODO: torchyfy
 class NeuralNetwork:
     """
     Neural network with multiple layers.

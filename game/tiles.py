@@ -3,7 +3,7 @@ from PIL import Image
 from PIL.Image import ROTATE_90, ROTATE_180, ROTATE_270, FLIP_TOP_BOTTOM, FLIP_LEFT_RIGHT
 import os
 import pyglet
-from core import Track
+from .core import Track
 
 """
 LARGE_SIZE GRID
