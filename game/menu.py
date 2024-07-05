@@ -1,47 +1,52 @@
 import tkinter as tk
 from tkinter.ttk import *
 
-class SettingsMenu:
 
+class SettingsMenu:
     def __init__(self):
         self.root = tk.Toplevel()
         self.root.geometry("300x400")
         self.root.configure(bg="white")
 
-        #self.root.protocol("WM_DELETE_WINDOW", self.quit)
+        # self.root.protocol("WM_DELETE_WINDOW", self.quit)
 
         self.frame = tk.Frame(self.root)
         self.frame.configure(bg="white")
 
-        self.label = Label(self.frame, text="Settings", font=("Helvetica", 16, "bold"), background="white")
+        self.label = Label(
+            self.frame,
+            text="Settings",
+            font=("Helvetica", 16, "bold"),
+            background="white",
+        )
 
         self.buttons = {
             "new": Button(self.frame, text="New NN"),
             "load": Button(self.frame, text="Load NN"),
             "save": Button(self.frame, text="Save NN"),
-            "ok": Button(self.frame, text="Save settings")
+            "ok": Button(self.frame, text="Save settings"),
         }
         self.widgets = {
             "friction": (
                 Label(self.frame, text="Friction"),
-                Spinbox(self.frame, from_=0, to=5, width=8)
+                Spinbox(self.frame, from_=0, to=5, width=8),
             ),
             "timeout_seconds": (
                 Label(self.frame, text="Time to live"),
-                Spinbox(self.frame, width=8)
+                Spinbox(self.frame, width=8),
             ),
             "population": (
                 Label(self.frame, text="Population"),
-                Spinbox(self.frame, width=8)
+                Spinbox(self.frame, width=8),
             ),
             "mutation_rate": (
                 Label(self.frame, text="Mutation rate"),
-                Spinbox(self.frame, width=8)
+                Spinbox(self.frame, width=8),
             ),
             "new_track_every_round": (
                 Label(self.frame, text="New track after every round"),
-                tk.Checkbutton(self.frame)
-            )
+                tk.Checkbutton(self.frame),
+            ),
         }
 
         # grid config
@@ -53,12 +58,13 @@ class SettingsMenu:
 
         self._place_widgets()
 
-    def set_values(self,
+    def set_values(
+        self,
         friction: float,
         timeout_seconds: int,
         population: int,
         mutation_rate: float,
-        new_track_every_round: bool
+        new_track_every_round: bool,
     ):
         self.widgets["friction"][1].insert(0, friction)
         self.widgets["timeout_seconds"][1].insert(0, timeout_seconds)

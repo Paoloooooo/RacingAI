@@ -1,5 +1,4 @@
 from models.neural_network import NeuralNetwork
-from os import listdir
 import json
 from models.objects import Result
 
@@ -51,19 +50,19 @@ class Entity:
             "acceleration": self.acceleration,
             "max_speed": self.max_speed,
             "rotation_speed": self.rotation_speed,
-            "friction": self.friction
+            "friction": self.friction,
         }
 
     def get_save_parameters(self):
         return {
-            "name" : self.name,
+            "name": self.name,
             "acceleration": self.acceleration,
             "max_speed": self.max_speed,
             "rotation_speed": self.rotation_speed,
             "shape": self.shape,
             "max_score": self.max_score,
             "gen_count": self.gen_count,
-            "friction": self.friction
+            "friction": self.friction,
         }
 
     def set_parameters_from_dict(self, par: dict):
@@ -91,14 +90,14 @@ class Entity:
             save_name += ".json"
         save_file = {
             "settings": self.get_save_parameters(),
-            "weights": [np_arr.tolist() for np_arr in self.nn.weights]
+            "weights": [np_arr.tolist() for np_arr in self.nn.weights],
         }
         with open(folder + "/" + save_name, "w") as json_file:
             json.dump(save_file, json_file)
         print("Saved ", save_name)
 
     def load_file(self, path):
-        #try:
+        # try:
         with open(path) as json_file:
             file_raw = json.load(json_file)
 
@@ -114,9 +113,12 @@ class Entity:
             print(f"Failed to load: {path}")
             return False"""
 
+
 """
 Class containing info about NNs and its parameters & generates new generations.
 """
+
+
 class Evolution:
     def __init__(self):
         self.best_result = Result(None, -1, 0)
@@ -126,16 +128,22 @@ class Evolution:
         return self.get_new_generation([nn], population)
 
     def get_new_generation(self, nns: [NeuralNetwork], population: int):
-        return [nns[i % len(nns)].reproduce(self.mutation_rate) for i in range(population)]
+        return [
+            nns[i % len(nns)].reproduce(self.mutation_rate) for i in range(population)
+        ]
 
-    def get_new_generation_from_results(self, results: [Result], population: int, to_add_count=3):
+    def get_new_generation_from_results(
+        self, results: [Result], population: int, to_add_count=3
+    ):
         best_nns = []
         # order by cp_score - if equal than dist_to_next_cp
         # sorted_results = sorted(results, key=lambda x: (x[1], -x[2]), reverse=True)
         sorted_results = sorted(results, reverse=True)
 
         # add best X
-        to_add = to_add_count if len(sorted_results) >= to_add_count else len(sorted_results)
+        to_add = (
+            to_add_count if len(sorted_results) >= to_add_count else len(sorted_results)
+        )
         for i in range(to_add):
             best_nns.append(sorted_results[i].nn)
 
@@ -144,7 +152,11 @@ class Evolution:
     def find_best_result(self, results: [Result]):
         # best cp_score - if equal than better dist_to_next_cp
         current_best_result = max(results)
-        self.best_result = current_best_result if current_best_result > self.best_result else self.best_result
+        self.best_result = (
+            current_best_result
+            if current_best_result > self.best_result
+            else self.best_result
+        )
         return self.best_result
 
         """nn, score, dist_to_next_cp = max(results, key=lambda x: (x[1], -x[2]))
@@ -152,6 +164,6 @@ class Evolution:
             self.max_score = score
             self.best_nn = dist_to_next_cp"""
 
+
 class CustomEvolution(Evolution):
     pass
-

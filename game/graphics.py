@@ -6,7 +6,7 @@ import numpy as np
 import os
 
 # colors
-WHITE = (255,255,255,255)
+WHITE = (255, 255, 255, 255)
 GREEN = (0, 153, 51, 255)
 RED = (204, 0, 0, 255)
 GRAY = (128, 128, 128, 255)
@@ -14,16 +14,16 @@ GRAY = (128, 128, 128, 255)
 # car images
 # TODO: understand what are those numbers
 racers_info = {
-    "alfaromeo" : ["alfaromeo.png", (0,0,0,255)],
-    "alphatauri" : ["alphatauri.png",(0,0,170,255)],
-    "alpine" : ["alpine.png",(52,205,243,255)],
-    "astonmartin" : ["astonmartin.png",(10,183,45,255)],
-    "ferrari" : ["ferrari.png",(150,150,150,255)],
-    "haas": ["haas.png",(231,132,0,255)],
-    "mclaren": ["mclaren.png",(203,0,0,255)],
-    "mercedes": ["mercedes.png",(250,56,178,255)],
-    "redbull": ["redbull.png",(228,229,0,255)],
-    "williams": ["williams.png",(255,255,255,255)]
+    "alfaromeo": ["alfaromeo.png", (0, 0, 0, 255)],
+    "alphatauri": ["alphatauri.png", (0, 0, 170, 255)],
+    "alpine": ["alpine.png", (52, 205, 243, 255)],
+    "astonmartin": ["astonmartin.png", (10, 183, 45, 255)],
+    "ferrari": ["ferrari.png", (150, 150, 150, 255)],
+    "haas": ["haas.png", (231, 132, 0, 255)],
+    "mclaren": ["mclaren.png", (203, 0, 0, 255)],
+    "mercedes": ["mercedes.png", (250, 56, 178, 255)],
+    "redbull": ["redbull.png", (228, 229, 0, 255)],
+    "williams": ["williams.png", (255, 255, 255, 255)],
 }
 
 
@@ -33,8 +33,9 @@ Rendering.
 Coordinates [x,y]:
 [0,0] = BOTTOM LEFT
 """
-class Camera:
 
+
+class Camera:
     def __init__(self, width, height):
         self.MOVEMENT_LIMIT = 0.5
         self.MOVEMENT_SPEED = 0.6
@@ -58,8 +59,12 @@ class Camera:
         # smooth camera movement
         diff_x = self.tar_x - self.x
         diff_y = self.tar_y - self.y
-        shift_x = diff_x * min(abs(diff_x / self.width) * self.MOVEMENT_SPEED, self.MOVEMENT_LIMIT)
-        shift_y = diff_y * min(abs(diff_y / self.height) * self.MOVEMENT_SPEED, self.MOVEMENT_LIMIT)
+        shift_x = diff_x * min(
+            abs(diff_x / self.width) * self.MOVEMENT_SPEED, self.MOVEMENT_LIMIT
+        )
+        shift_y = diff_y * min(
+            abs(diff_y / self.height) * self.MOVEMENT_SPEED, self.MOVEMENT_LIMIT
+        )
         self.set_pos(self.x + shift_x, self.y + shift_y)
 
     def update_zoom(self):
@@ -87,10 +92,10 @@ class Camera:
         self.zoom_height = self.height / self.zoom
 
     def set_target_zoom_center(self, scale):
-        self.set_target_zoom(self.width/2, self.height/2, scale)
+        self.set_target_zoom(self.width / 2, self.height / 2, scale)
 
     def set_zoom_center(self, scale):
-        self.set_zoom(self.width/2, self.height/2, scale)
+        self.set_zoom(self.width / 2, self.height / 2, scale)
 
     def drag(self, dx, dy):
         self.x += dx
@@ -125,33 +130,127 @@ class HUD:
         self.height = height
 
         try:
-            pyglet.font.add_file(os.path.join(font_path,'Comfortaa-Bold.ttf'))
-            pyglet.font.add_file(os.path.join(font_path,'Comfortaa-Regular.ttf'))
+            pyglet.font.add_file(os.path.join(font_path, "Comfortaa-Bold.ttf"))
+            pyglet.font.add_file(os.path.join(font_path, "Comfortaa-Regular.ttf"))
         except:
             print("Error >> loading font")
 
         # LABELS
         labels_init_dict = {
             # key:  [text, font_name, bold, size, color, (x,y)]
-            "name": ["","Comfortaa",True,30,(255,255,255,140),(10,78)],
-            "gen": ["Generation: 0","Comfortaa",False,15,(255,255,255,140),(10,12)],
-            "max": ["Best score: 0","Comfortaa",False,15,(255,255,255,140),(10,36)],
-            "time": ["Time: 0 / 0","Comfortaa",False,15,(255,255,255,140),(10,62)],
-
-
-            "save": ["[S] Save","Comfortaa",False,13,(255,255,255,140),(10,140)],
-            "full": ["[F] Full","Comfortaa",False,13,(255,255,255,140),(10,160)],
-            "pause": ["[P] Pause","Comfortaa",False,13,(255,255,255,140),(10,180)],
-            "debug": ["[D] Debug","Comfortaa",False,13,(255,255,255,140),(10,200)],
-            "labels": ["[L] Labels", "Comfortaa", False, 13, (255, 255, 255, 140), (10, 220)],
-            "nodraw": ["[N] No draw", "Comfortaa", False, 13, (255, 255, 255, 140), (10, 240)],
-            "track": ["[T] Gen track", "Comfortaa", False, 13, (255, 255, 255, 140), (10, 260)],
-
-            "cam_move": ["[Mouse] Move&Zoom","Comfortaa",False,13,(255,255,255,140),(10,290)],
-            "cam_change": ["[Left & Right] Change cars", "Comfortaa", False,13,(255,255,255,140),(10,310)],
-            "cam_leader": ["[Up] Select leader", "Comfortaa", False, 13, (255, 255, 255, 140), (10, 330)],
-            "cam_free": ["[C] Free Cam","Comfortaa",False,13,(255,255,255,140),(10,350)],
-
+            "name": ["", "Comfortaa", True, 30, (255, 255, 255, 140), (10, 78)],
+            "gen": [
+                "Generation: 0",
+                "Comfortaa",
+                False,
+                15,
+                (255, 255, 255, 140),
+                (10, 12),
+            ],
+            "max": [
+                "Best score: 0",
+                "Comfortaa",
+                False,
+                15,
+                (255, 255, 255, 140),
+                (10, 36),
+            ],
+            "time": [
+                "Time: 0 / 0",
+                "Comfortaa",
+                False,
+                15,
+                (255, 255, 255, 140),
+                (10, 62),
+            ],
+            "save": [
+                "[S] Save",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 140),
+            ],
+            "full": [
+                "[F] Full",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 160),
+            ],
+            "pause": [
+                "[P] Pause",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 180),
+            ],
+            "debug": [
+                "[D] Debug",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 200),
+            ],
+            "labels": [
+                "[L] Labels",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 220),
+            ],
+            "nodraw": [
+                "[N] No draw",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 240),
+            ],
+            "track": [
+                "[T] Gen track",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 260),
+            ],
+            "cam_move": [
+                "[Mouse] Move&Zoom",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 290),
+            ],
+            "cam_change": [
+                "[Left & Right] Change cars",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 310),
+            ],
+            "cam_leader": [
+                "[Up] Select leader",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 330),
+            ],
+            "cam_free": [
+                "[C] Free Cam",
+                "Comfortaa",
+                False,
+                13,
+                (255, 255, 255, 140),
+                (10, 350),
+            ],
         }
         self.labels = self.init_labels(labels_init_dict)
 
@@ -166,7 +265,7 @@ class HUD:
                 font_size=val[3],
                 color=val[4],
                 x=val[5][0],
-                y=val[5][1]
+                y=val[5][1],
             )
         return labels
 
@@ -178,6 +277,7 @@ class HUD:
     def on_resize(self, width, height):
         pass
 
+
 class Graphics:
     def __init__(self, width, height, car_path, font_path):
         self.car_batch = pyglet.graphics.Batch()
@@ -185,7 +285,12 @@ class Graphics:
 
         self.car_images = []
         for name in racers_info:
-            self.car_images.append((name, self.load_car_image(os.path.join(car_path,racers_info[name][0]))))
+            self.car_images.append(
+                (
+                    name,
+                    self.load_car_image(os.path.join(car_path, racers_info[name][0])),
+                )
+            )
 
         self.width = width
         self.height = height
@@ -198,9 +303,13 @@ class Graphics:
         step = 768
         size = 10
         for i in range(-size + 1, size):
-            self.draw_line([[i * step, -size * step], [i * step, size * step]], (1, 1, 1, 0.3))
+            self.draw_line(
+                [[i * step, -size * step], [i * step, size * step]], (1, 1, 1, 0.3)
+            )
         for i in range(-size + 1, size):
-            self.draw_line([[-size * step, i * step], [size * step, i * step]], (1, 1, 1, 0.3))
+            self.draw_line(
+                [[-size * step, i * step], [size * step, i * step]], (1, 1, 1, 0.3)
+            )
 
     def on_resize(self, width, height):
         self.width = width
@@ -212,7 +321,7 @@ class Graphics:
         glOrtho(*self.camera.get_sides(), 1, -1)
 
     def set_default_view(self):
-        glOrtho(0,self.width,0,self.height,1,-1)
+        glOrtho(0, self.width, 0, self.height, 1, -1)
 
     def clear(self):
         glClearColor(0.69, 0.76, 0.87, 1)
@@ -222,7 +331,7 @@ class Graphics:
     def draw_hud(self):
         glLoadIdentity()
         glPushMatrix()
-        glOrtho(0,self.width,0,self.height,1,-1)
+        glOrtho(0, self.width, 0, self.height, 1, -1)
         self.hud.draw()
         glPopMatrix()
 
@@ -233,7 +342,7 @@ class Graphics:
         self.draw_circle(car.xpos, car.ypos, 20)
 
     def draw_circle(self, x, y, radius):
-        circle = pyglet.shapes.Circle(x,y,radius)
+        circle = pyglet.shapes.Circle(x, y, radius)
         circle.draw()
 
     # draw track details
@@ -251,7 +360,7 @@ class Graphics:
         car.info.update_labels(car.xpos, car.ypos)
         car.info.draw()
 
-    def draw_car_sensors(self,car):
+    def draw_car_sensors(self, car):
         for sen in car.sensors:
             line = np.array([(car.xpos, car.ypos), sen])
             self.draw_line(line, (1, 1, 1, 0.3))
@@ -260,10 +369,7 @@ class Graphics:
     def update_sprites(self, cars):
         for car in cars:
             car.sprite.update(
-                x=car.xpos,
-                y=car.ypos,
-                rotation=-car.angle - 90,
-                scale=0.24
+                x=car.xpos, y=car.ypos, rotation=-car.angle - 90, scale=0.24
             )
 
     # load car texture
@@ -284,18 +390,19 @@ class Graphics:
     # draw a point
     def draw_point(self, point, size=5):
         glBegin(GL_TRIANGLE_FAN)
-        glColor3f(1,.5,.5)
-        glVertex2f((point[0]+size), (point[1]-size))
-        glVertex2f((point[0]+size), (point[1]+size))
-        glVertex2f((point[0]-size), (point[1]+size))
-        glVertex2f((point[0]-size), (point[1]-size))
+        glColor3f(1, 0.5, 0.5)
+        glVertex2f((point[0] + size), (point[1] - size))
+        glVertex2f((point[0] + size), (point[1] + size))
+        glVertex2f((point[0] - size), (point[1] + size))
+        glVertex2f((point[0] - size), (point[1] - size))
         glEnd()
 
     def clear_batch(self):
-        del(self.car_batch)
-        del(self.car_labels_batch)
+        del self.car_batch
+        del self.car_labels_batch
         self.car_labels_batch = pyglet.graphics.Batch()
         self.car_batch = pyglet.graphics.Batch()
+
 
 class Leaderboard:
     def __init__(self):
@@ -313,22 +420,28 @@ class Leaderboard:
 
         self.margin = 10
 
-
-
     def init_labels(self):
         for i in range(20):
             v = self.place_label_init_dict
-            self.labels.append(pyglet.text.Label(
-                v[0], anchor_x=v[6], font_name=v[1],
-                bold=v[2], font_size=v[3],
-                color=v[4], x=v[5], y=1
-            ))
+            self.labels.append(
+                pyglet.text.Label(
+                    v[0],
+                    anchor_x=v[6],
+                    font_name=v[1],
+                    bold=v[2],
+                    font_size=v[3],
+                    color=v[4],
+                    x=v[5],
+                    y=1,
+                )
+            )
 
     def draw_background(self):
         pass
 
     def draw_labels(self):
         pass
+
 
 class CarLabel:
     def __init__(self, order=1, name="", height=24, width=43, margin=25, batch=None):
@@ -346,14 +459,25 @@ class CarLabel:
         self.bg_init_dict = {
             # key: [color, [(0,0),(0,0),(0,0),(0,0)]
             "black_bg": [(0, 0, 0, 0.5), [(0, m), (0, m + h), (b_w, m + h), (b_w, m)]],
-            "white_bg": [(255, 255, 255, 0.8), [(0, m), (0, m + h), (-w_w, m + h), (-w_w, m)]]
+            "white_bg": [
+                (255, 255, 255, 0.8),
+                [(0, m), (0, m + h), (-w_w, m + h), (-w_w, m)],
+            ],
         }
 
         self.labels = {}
         self.labels_init_dict = {
             # key:  [text, font_name, bold, size, color, (x,y), anchor_x]
-            "order": ["1","Comfortaa", True, 12, (0,0,0,255), (-5, m), "right"],
-            "name": ["TST","Comfortaa", True, 12, (255, 255, 255, 255), (5, m), "left"],
+            "order": ["1", "Comfortaa", True, 12, (0, 0, 0, 255), (-5, m), "right"],
+            "name": [
+                "TST",
+                "Comfortaa",
+                True,
+                12,
+                (255, 255, 255, 255),
+                (5, m),
+                "left",
+            ],
         }
 
         self.init_labels(batch=batch)
@@ -370,7 +494,7 @@ class CarLabel:
                 color=val[4],
                 x=val[5][0],
                 y=val[5][1],
-                batch=batch
+                batch=batch,
             )
 
     def draw_labels(self):
@@ -414,10 +538,10 @@ class CarInfo:
         # LABELS
         self.labels_init_dict = {
             # key:  [text, font_name, bold, size, color, (x,y)]
-            "name": ["Car","Comfortaa",True,20,(255,255,255,200),(0,-100)],
-            "active": ["true","Comfortaa",False,15,(255,255,255,200),(0,-120)],
-            "score": ["0","Comfortaa",False,15,(255,255,255,200),(0,-140)],
-            "speed": ["0","Comfortaa",False,15,(255,255,255,200),(0,-160)],
+            "name": ["Car", "Comfortaa", True, 20, (255, 255, 255, 200), (0, -100)],
+            "active": ["true", "Comfortaa", False, 15, (255, 255, 255, 200), (0, -120)],
+            "score": ["0", "Comfortaa", False, 15, (255, 255, 255, 200), (0, -140)],
+            "speed": ["0", "Comfortaa", False, 15, (255, 255, 255, 200), (0, -160)],
         }
         self.labels = self.init_labels(self.labels_init_dict)
 
@@ -433,7 +557,7 @@ class CarInfo:
                 font_size=val[3],
                 color=val[4],
                 x=val[5][0],
-                y=val[5][1]
+                y=val[5][1],
             )
         return labels
 
@@ -448,7 +572,7 @@ class CarInfo:
         h = self.bg_height
         m = self.bg_margin
         glBegin(GL_TRIANGLE_FAN)
-        glColor4f(0,0,0,.5)
+        glColor4f(0, 0, 0, 0.5)
         glVertex2f(self.x - w, self.y + m)
         glVertex2f(self.x + w, self.y + m)
         glVertex2f(self.x + w, self.y + m + h)
@@ -463,4 +587,3 @@ class CarInfo:
             label = self.labels[key]
             label.x = x + init_values[5][0]
             label.y = y + init_values[5][1]
-

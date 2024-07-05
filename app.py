@@ -3,7 +3,6 @@
 from pyglet.gl import *
 from pyglet.window import key
 
-from numpy import loadtxt, empty
 import os
 import json
 
@@ -11,13 +10,10 @@ from constants import TILES_PATH, CARS_PATH, ASSETS_PATH, FONTS_PATH
 
 from game.graphics import Graphics
 from game.core import Simulation, Track
-from game.menu import SettingsMenu
 from game.messages import *
 from game.tiles import TileManager
-from models.neural_network import NeuralNetwork
 
 from models.evolution import Evolution, Entity
-
 
 
 # load .json file
@@ -30,10 +26,12 @@ def load_json(directory):
         print("Failed to load: %s" % directory)
         return False
 
+
 # save .json file
-def save_json(directory,data):
+def save_json(directory, data):
     with open(directory, "w") as json_file:
         json.dump(data, json_file)
+
 
 # save nn as a .json file
 def save_neural_network(name, weights, settings, folder="saves"):
@@ -46,15 +44,17 @@ def save_neural_network(name, weights, settings, folder="saves"):
         savename = "%s(%s)" % (name, name_count)
     savefile = {
         "settings": settings,
-        "weights": [np_arr.tolist() for np_arr in weights]
+        "weights": [np_arr.tolist() for np_arr in weights],
     }
-    with open(folder+"/"+savename+".json", "w") as json_file:
+    with open(folder + "/" + savename + ".json", "w") as json_file:
         json.dump(savefile, json_file)
     print("Saved ", savename)
+
 
 """
 Window management.
 """
+
 
 class App:
     def __init__(self, settings):
@@ -63,14 +63,15 @@ class App:
 
         ### INIT WINDOW ###
         self.window = pyglet.window.Window(fullscreen=False, resizable=True)
-        self.window.set_caption('Racing AI')
-        if not self.window.fullscreen: self.window.set_size(settings["width"], settings["height"])
+        self.window.set_caption("Racing AI")
+        if not self.window.fullscreen:
+            self.window.set_size(settings["width"], settings["height"])
         self.window.set_minimum_size(400, 200)
         self.init_gl()
 
         ### LOAD ICON ###
         try:
-            icon = pyglet.image.load(os.path.join(ASSETS_PATH,'icon.ico'))
+            icon = pyglet.image.load(os.path.join(ASSETS_PATH, "icon.ico"))
             self.window.set_icon(icon)
         except:
             print("Error >>> Loading icon")
@@ -81,7 +82,9 @@ class App:
         self.simulation = Simulation()
         self.evolution = Evolution()
         self.evolution.mutation_rate = self.settings["mutation_rate"]
-        self.graphics = Graphics(self.window.width, self.window.height, CARS_PATH, FONTS_PATH)
+        self.graphics = Graphics(
+            self.window.width, self.window.height, CARS_PATH, FONTS_PATH
+        )
 
         ### TRACK MANAGER ###
         self.tile_manager = TileManager()
@@ -101,7 +104,9 @@ class App:
 
         self.pause = False  # pause the simulation
         self.timer = 0  # number of ticks
-        self.timer_limit = self.settings["timeout_seconds"] // self.settings["render_timestep"]  # max ticks
+        self.timer_limit = (
+            self.settings["timeout_seconds"] // self.settings["render_timestep"]
+        )  # max ticks
 
         ### CONSTANTS ###
         self.CAR_SELECTION_RADIUS = 100  # max dist between car and click
@@ -131,7 +136,7 @@ class App:
                 self.camera_selected_car = car
 
     # when key is released
-    def on_key_press(self,symbol, modifiers):
+    def on_key_press(self, symbol, modifiers):
         # save the nn
         if symbol == key.S:
             self.window.set_fullscreen(False)
@@ -144,20 +149,19 @@ class App:
                     show_message(f"Succesfully saved {filename} to /{directory}")
             else:
                 show_error("No neural network to save yet.")
-                print(f"Cannot save.")
+                print("Cannot save.")
         # TODO: load file
         if symbol == key.T:
-            self.change_track(
-                track=self.tile_manager.generate_track(shape=(5, 3))
-            )
+            self.change_track(track=self.tile_manager.generate_track(shape=(5, 3)))
 
         elif symbol == key.DELETE:
             self.end_simulation()
         # fullscreen on/off
         elif symbol == key.F:
-            #self.window.maximize()
+            # self.window.maximize()
             self.window.set_fullscreen(not self.window.fullscreen)
-            if not self.window.fullscreen: self.window.set_size(self.settings["width"], self.settings["height"])
+            if not self.window.fullscreen:
+                self.window.set_size(self.settings["width"], self.settings["height"])
         # pause on/off
         elif symbol == key.P:
             self.pause = not self.pause
@@ -187,7 +191,7 @@ class App:
     def on_mouse_drag(self, x, y, dx, dy, buttons, modif):
         if self.camera_free:
             # left
-            if (buttons == 1):
+            if buttons == 1:
                 self.graphics.camera.drag(-dx, -dy)
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
@@ -202,8 +206,11 @@ class App:
             new_ind = self.simulation.cars.index(self.camera_selected_car)
             while True:
                 new_ind -= step
-                self.camera_selected_car = self.simulation.cars[new_ind % len(self.simulation.cars)]
-                if self.camera_selected_car.active: break
+                self.camera_selected_car = self.simulation.cars[
+                    new_ind % len(self.simulation.cars)
+                ]
+                if self.camera_selected_car.active:
+                    break
 
     # when closed (unnecessary)
     def on_close(self):
@@ -215,8 +222,6 @@ class App:
 
     # every frame
     def on_draw(self):
-
-
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
 
@@ -234,9 +239,7 @@ class App:
 
         self.simulation.track.bg.blit(0, 0)
 
-
-
-        #draw cars
+        # draw cars
         self.graphics.car_batch.draw()
 
         # CAR LABELS - F1
@@ -246,7 +249,6 @@ class App:
                 car.label.labels["order"].text = str(count)
                 count += 1
             self.graphics.draw_car_labels(self.simulation.cars)
-
 
         # draw hidden details
         if self.debugging_mode:
@@ -260,7 +262,6 @@ class App:
             self.camera_selected_car.update_info()
             self.graphics.highligh_car(self.camera_selected_car)
 
-
             self.graphics.draw_car_info(self.camera_selected_car)
             self.graphics.draw_car_sensors(self.camera_selected_car)
             # draw checked lines
@@ -269,9 +270,7 @@ class App:
                 for j in i:
                     self.graphics.draw_line(j, (0.5, 1, 1, 1))
 
-
         glPopMatrix()
-
 
         self.graphics.draw_hud()
 
@@ -282,13 +281,12 @@ class App:
         results = self.simulation.get_nns_results()
         self.simulation.generate_cars_from_nns(
             nns=self.evolution.get_new_generation_from_results(
-                results,
-                self.settings["population"]
+                results, self.settings["population"]
             ),
             parameters=self.entity.get_car_parameters(),
             images=self.graphics.car_images,
             batch=self.graphics.car_batch,
-            labels_batch=self.graphics.car_labels_batch
+            labels_batch=self.graphics.car_labels_batch,
         )
         self.entity.set_nn_from_result(self.evolution.find_best_result(results))
         self.entity.increment_gen_count()
@@ -298,7 +296,7 @@ class App:
         self.graphics.update_sprites(self.simulation.cars)
 
     # every frame
-    def update(self,dt):
+    def update(self, dt):
         if not self.pause:
             # car behaviour
             active = self.simulation.behave(dt)
@@ -312,7 +310,9 @@ class App:
                 if self.camera_selected_car:
                     if not self.camera_selected_car.active:
                         self.camera_selected_car = self.simulation.get_leader()
-                    self.graphics.camera.set_target(self.camera_selected_car.xpos, self.camera_selected_car.ypos)
+                    self.graphics.camera.set_target(
+                        self.camera_selected_car.xpos, self.camera_selected_car.ypos
+                    )
 
             self.graphics.camera.update_movement()
             self.graphics.camera.update_zoom()
@@ -328,13 +328,21 @@ class App:
             self.timer = 0
             self.new_generation()
         seconds = int(self.timer * self.settings["render_timestep"])
-        self.graphics.hud.labels["time"].text = "Time: " + str(seconds) + " / " + str(self.settings["timeout_seconds"])
+        self.graphics.hud.labels["time"].text = (
+            "Time: " + str(seconds) + " / " + str(self.settings["timeout_seconds"])
+        )
 
     # update labels from self entity
     def update_labels(self, entity: Entity):
-        self.graphics.hud.labels["name"].text = self.entity.name[:10]  # first 10 characters to fit screen
-        self.graphics.hud.labels["gen"].text = "Generation: " + str(int(self.entity.gen_count))
-        self.graphics.hud.labels["max"].text = "Best score: " + str(self.entity.max_score)
+        self.graphics.hud.labels["name"].text = self.entity.name[
+            :10
+        ]  # first 10 characters to fit screen
+        self.graphics.hud.labels["gen"].text = "Generation: " + str(
+            int(self.entity.gen_count)
+        )
+        self.graphics.hud.labels["max"].text = "Best score: " + str(
+            self.entity.max_score
+        )
 
     def change_track(self, track):
         self.timer = 0
@@ -342,27 +350,29 @@ class App:
         self.new_generation()
 
     # start of simulation
-    def start_simulation(self, entity: Entity, track: Track=None):
-
+    def start_simulation(self, entity: Entity, track: Track = None):
         # entity
         self.entity = entity
         self.entity.increment_gen_count()
 
         # set track or generate random
-        self.simulation.track = track if track is not None else self.tile_manager.generate_track(shape=(5, 3))
+        self.simulation.track = (
+            track
+            if track is not None
+            else self.tile_manager.generate_track(shape=(5, 3))
+        )
 
         # set labels
         self.update_labels(self.entity)
 
         self.simulation.generate_cars_from_nns(
             nns=self.evolution.get_new_generation(
-                [self.entity.get_nn()],
-                self.settings["population"]
+                [self.entity.get_nn()], self.settings["population"]
             ),
             parameters=self.entity.get_car_parameters(),
             images=self.graphics.car_images,
             batch=self.graphics.car_batch,
-            labels_batch=self.graphics.car_labels_batch
+            labels_batch=self.graphics.car_labels_batch,
         )
 
         self.camera_selected_car = self.simulation.get_leader()

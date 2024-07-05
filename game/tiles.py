@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-from PIL.Image import ROTATE_90, ROTATE_180, ROTATE_270, FLIP_TOP_BOTTOM, FLIP_LEFT_RIGHT
+from PIL.Image import FLIP_TOP_BOTTOM
 import os
 import pyglet
 from .core import Track
@@ -30,16 +30,29 @@ SMALL_SIZE = MEDIUM_SIZE / 8
 
 def SEG_TO_COORDS(segment):
     x, y = segment
-    arr = np.array([[],[]])
+    arr = np.array([[], []])
     if x == 0:
-        arr = [[[0, ((y - 1) * MEDIUM_SIZE) + SMALL_SIZE]], [[0, (y * MEDIUM_SIZE) - SMALL_SIZE]]]
+        arr = [
+            [[0, ((y - 1) * MEDIUM_SIZE) + SMALL_SIZE]],
+            [[0, (y * MEDIUM_SIZE) - SMALL_SIZE]],
+        ]
     elif x == 4:
-        arr = [[[LARGE_SIZE, (y * MEDIUM_SIZE) - SMALL_SIZE]], [[LARGE_SIZE, ((y - 1) * MEDIUM_SIZE) + SMALL_SIZE]]]
+        arr = [
+            [[LARGE_SIZE, (y * MEDIUM_SIZE) - SMALL_SIZE]],
+            [[LARGE_SIZE, ((y - 1) * MEDIUM_SIZE) + SMALL_SIZE]],
+        ]
     elif y == 0:
-        arr = [[[(x * MEDIUM_SIZE) - SMALL_SIZE, 0]], [[((x - 1) * MEDIUM_SIZE) + SMALL_SIZE, 0]]]
+        arr = [
+            [[(x * MEDIUM_SIZE) - SMALL_SIZE, 0]],
+            [[((x - 1) * MEDIUM_SIZE) + SMALL_SIZE, 0]],
+        ]
     elif y == 4:
-        arr = [[[((x - 1) * MEDIUM_SIZE) + SMALL_SIZE, LARGE_SIZE]], [[(x * MEDIUM_SIZE) - SMALL_SIZE, LARGE_SIZE]]]
+        arr = [
+            [[((x - 1) * MEDIUM_SIZE) + SMALL_SIZE, LARGE_SIZE]],
+            [[(x * MEDIUM_SIZE) - SMALL_SIZE, LARGE_SIZE]],
+        ]
     return np.array(arr)
+
 
 def COORDS_TO_STR(coords):
     """
@@ -47,6 +60,7 @@ def COORDS_TO_STR(coords):
     :return: "XY" string
     """
     return "".join([str(n) for n in coords])
+
 
 def GRID_OUT_TO_INP(out, size=5):
     max_val = size - 1
@@ -61,6 +75,7 @@ def GRID_OUT_TO_INP(out, size=5):
         inp[1] = 0
     return inp
 
+
 def GRID_SHIFT(out, size=5):
     shift = np.array([0, 0])
     if out[0] == 0:
@@ -72,6 +87,7 @@ def GRID_SHIFT(out, size=5):
     elif out[1] == size - 1:
         shift[1] = 1
     return shift
+
 
 # load track from a folder
 def load_track(directory):
@@ -85,14 +101,12 @@ def load_track(directory):
     # [[[xl1,yl1],[xl2,yl2]],
     #  [[xr1,yr1],[xr2,yr2]], ...]
     shaped = np.empty((2, raw.shape[0], 2))
-    shaped[0,:] = raw[:,0]
-    shaped[1,:] = raw[:,1]
+    shaped[0, :] = raw[:, 0]
+    shaped[1, :] = raw[:, 1]
     return shaped
 
 
-
 class Tile:
-
     def __init__(self, arr, inp, out, image=None):
         self.inp = inp  # (x, y)
         self.out = out  # (x, y)
@@ -114,31 +128,95 @@ class TileManager:
     04 14 24 34 44
     03 13 23 33 43
     """
+
     def __init__(self, shape=5):
         self.shape = shape
         self.tiles = {}
         self.GRID_PATHS = {
-            (3, 2): [
-                [[0,0], [1,0], [2,0], [2,1], [1,1], [0,1]]
-            ],
+            (3, 2): [[[0, 0], [1, 0], [2, 0], [2, 1], [1, 1], [0, 1]]],
             (4, 3): [
-                [[0,0],[1,0],[2,0],[3,0],[3,1],[3,2],[2,2],[2,1],[1,1],[1,2],[0,2],[0,1]],
-                [[0,0],[1,0],[2,0],[3,0],[3,1],[3,2],[2,2],[1,2],[0,2],[0,1]]
+                [
+                    [0, 0],
+                    [1, 0],
+                    [2, 0],
+                    [3, 0],
+                    [3, 1],
+                    [3, 2],
+                    [2, 2],
+                    [2, 1],
+                    [1, 1],
+                    [1, 2],
+                    [0, 2],
+                    [0, 1],
+                ],
+                [
+                    [0, 0],
+                    [1, 0],
+                    [2, 0],
+                    [3, 0],
+                    [3, 1],
+                    [3, 2],
+                    [2, 2],
+                    [1, 2],
+                    [0, 2],
+                    [0, 1],
+                ],
             ],
             (5, 3): [
                 # 0 1 2 3 4
                 # b       5
                 # a 9 8 7 6
-                [[0,0], [1,0], [2,0], [3,0], [4,0], [4,1], [4,2], [3,2], [2,2], [1,2], [0,2], [0,1]],
+                [
+                    [0, 0],
+                    [1, 0],
+                    [2, 0],
+                    [3, 0],
+                    [4, 0],
+                    [4, 1],
+                    [4, 2],
+                    [3, 2],
+                    [2, 2],
+                    [1, 2],
+                    [0, 2],
+                    [0, 1],
+                ],
                 # 0 1 2 3 4
                 # d a 9 8 5
                 # c b   7 6
-                [[0,0], [1,0], [2,0], [3,0], [4,0], [4,1], [4,2], [3,2], [3,1], [2,1], [1,1], [1,2], [0,2], [0,1]],
+                [
+                    [0, 0],
+                    [1, 0],
+                    [2, 0],
+                    [3, 0],
+                    [4, 0],
+                    [4, 1],
+                    [4, 2],
+                    [3, 2],
+                    [3, 1],
+                    [2, 1],
+                    [1, 1],
+                    [1, 2],
+                    [0, 2],
+                    [0, 1],
+                ],
                 # 0 1 2 3 4
                 # b a 9 8 5
                 #       7 6
-                [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [4, 1], [4, 2], [3, 2], [3, 1], [2, 1], [1, 1], [0, 1]]
-            ]
+                [
+                    [0, 0],
+                    [1, 0],
+                    [2, 0],
+                    [3, 0],
+                    [4, 0],
+                    [4, 1],
+                    [4, 2],
+                    [3, 2],
+                    [3, 1],
+                    [2, 1],
+                    [1, 1],
+                    [0, 1],
+                ],
+            ],
         }
 
     def generate_track(self, shape=(5, 3), spawn_index=0):
@@ -151,27 +229,21 @@ class TileManager:
             force_rectangle=True
         )"""
         size_x, size_y = shape[0] * LARGE_SIZE, shape[1] * LARGE_SIZE
-        image = Image.new('RGBA', (
-            size_x, size_y
-        ))
+        image = Image.new("RGBA", (size_x, size_y))
 
         for grid_pos, tile in tile_grid:
             nodes = self.add_tile_to_arr(nodes, grid_pos, tile)
             # paste tiles to image - reverse y axis
-            image.paste(tile.image, (grid_pos[0] * LARGE_SIZE, (shape[1] - grid_pos[1] - 1) * LARGE_SIZE))
-            #image.blit_into(tile.image, grid_pos[0] * LARGE_SIZE, grid_pos[1] * LARGE_SIZE, 0)
+            image.paste(
+                tile.image,
+                (grid_pos[0] * LARGE_SIZE, (shape[1] - grid_pos[1] - 1) * LARGE_SIZE),
+            )
+            # image.blit_into(tile.image, grid_pos[0] * LARGE_SIZE, grid_pos[1] * LARGE_SIZE, 0)
 
         # convert PIL image to pyglet image from bytes
         image = image.transpose(FLIP_TOP_BOTTOM)
-        pyglet_image = pyglet.image.ImageData(size_x, size_y, 'RGBA', image.tobytes())
-        return Track(
-            shape=shape,
-            nodes=nodes,
-            spawn_index=spawn_index,
-            bg=pyglet_image
-        )
-
-
+        pyglet_image = pyglet.image.ImageData(size_x, size_y, "RGBA", image.tobytes())
+        return Track(shape=shape, nodes=nodes, spawn_index=spawn_index, bg=pyglet_image)
 
     def _grid_to_path(self, grid_coords):
         # path of grid coordinates to direction path
@@ -191,7 +263,9 @@ class TileManager:
 
     def generate_tile_grid(self, shape=(5, 3)):
         """Generate array of track nodes."""
-        return self.generate_tile_grid_from_large_path(shape, self._grid_to_path(self.get_random_grid_path(shape)))
+        return self.generate_tile_grid_from_large_path(
+            shape, self._grid_to_path(self.get_random_grid_path(shape))
+        )
 
     def generate_tile_grid_from_large_path(self, shape, out_path, inp_start=None):
         """
@@ -202,11 +276,13 @@ class TileManager:
         """
         if inp_start is None:
             inp_start = GRID_OUT_TO_INP(out_path[-1], size=3)
+
         def l_to_m(c):
             if c[0] == 1:
-                return [np.random.randint(1,4), 4 if c[1] == 0 else 0]
+                return [np.random.randint(1, 4), 4 if c[1] == 0 else 0]
             if c[1] == 1:
                 return [0 if c[0] == 0 else 4, np.random.randint(1, 4)]
+
         m_path = []
         first = l_to_m(inp_start)
         m_inp = first
@@ -237,9 +313,10 @@ class TileManager:
 
     def add_tile_to_arr(self, arr, grid_pos, tile):
         con_arr = tile.arr.copy()
-        con_arr[:,:,0] += (grid_pos[0] * LARGE_SIZE)
-        con_arr[:,:,1] += (grid_pos[1] * LARGE_SIZE)
-        if not arr.size > 0: return con_arr
+        con_arr[:, :, 0] += grid_pos[0] * LARGE_SIZE
+        con_arr[:, :, 1] += grid_pos[1] * LARGE_SIZE
+        if not arr.size > 0:
+            return con_arr
         return np.concatenate((arr, con_arr), axis=1)
 
     def load_tiles(self, root_dir=None):
@@ -266,9 +343,11 @@ class TileManager:
                         arr = load_track(file)
                         # YX_YX_N ??
                         # "00_00_0" --> [0, 0] [0, 0] [0]
-                        inp, out, num = map(lambda n: [int(s) for s in n], name.split("_"))
+                        inp, out, num = map(
+                            lambda n: [int(s) for s in n], name.split("_")
+                        )
                     if ext == ".png":
-                        #img = pyglet.image.load(os.path.abspath(file)).get_texture(rectangle=True)
+                        # img = pyglet.image.load(os.path.abspath(file)).get_texture(rectangle=True)
                         img = Image.open(os.path.abspath(file))
                 if is_tile:
                     try:
@@ -292,6 +371,7 @@ class TileManager:
 
     def draw_track(self, arr):
         import matplotlib.pyplot as plt
+
         plt.gca().invert_yaxis()
         plt.plot(arr[0, :, 0], arr[0, :, 1])
         plt.plot(arr[1, :, 0], arr[1, :, 1])
@@ -299,11 +379,12 @@ class TileManager:
 
     def draw_tile(self, tile):
         import matplotlib.pyplot as plt
+
         plt.gca().invert_yaxis()
-        plt.scatter([0,768], [0,768]) # corners
+        plt.scatter([0, 768], [0, 768])  # corners
         arr = np.concatenate((tile.arr, SEG_TO_COORDS(tile.out)), axis=1)
-        plt.plot(arr[0,:,0], arr[0,:,1])
-        plt.plot(arr[1,:,0], arr[1,:,1])
+        plt.plot(arr[0, :, 0], arr[0, :, 1])
+        plt.plot(arr[1, :, 0], arr[1, :, 1])
         plt.show()
 
     def rot_tile(self, tile, n):
@@ -320,7 +401,7 @@ class TileManager:
         img = self._flip_img(tile.image)
         return Tile(arr=arr, inp=inp, out=out, image=img)
 
-    def _rot_3d_arr(self, arr, n, max_dim = 5):
+    def _rot_3d_arr(self, arr, n, max_dim=5):
         # rot 90 deg * n
         _arr = np.copy(arr)
         for _ in range(n):
@@ -329,7 +410,7 @@ class TileManager:
                     coor[0], coor[1] = coor[1], max_dim - coor[0] - 1
         return _arr
 
-    def _rot_1d_arr(self, coor, n, max_dim = 5):
+    def _rot_1d_arr(self, coor, n, max_dim=5):
         _coor = np.copy(coor)
         for _ in range(n):
             _coor[0], _coor[1] = _coor[1], max_dim - _coor[0] - 1
@@ -339,15 +420,15 @@ class TileManager:
         return img.rotate(n * -90)
         # return img.get_transform(rotate=n * 90)
 
-    def _flip_3d_arr(self, arr, max_dim = 5):
+    def _flip_3d_arr(self, arr, max_dim=5):
         # flip on y axis
         _arr = np.copy(arr)
         _shape = np.full(arr[:, :, 1].shape, max_dim)
         _arr[:, :, 1] = (_shape - arr[:, :, 1]) - 1
-        _arr[[0,1]] = _arr[[1,0]] # swap left and right
+        _arr[[0, 1]] = _arr[[1, 0]]  # swap left and right
         return _arr
 
-    def _flip_1d_arr(self, arr, max_dim = 5):
+    def _flip_1d_arr(self, arr, max_dim=5):
         # flip on y axis
         _arr = np.array([arr[0], max_dim - arr[1] - 1])
         return _arr
@@ -355,6 +436,7 @@ class TileManager:
     def _flip_img(self, img):
         return img.transpose(FLIP_TOP_BOTTOM)
         # return img.get_transform(flip_x=True).get_texture(rectangle=True)
+
 
 """
 dirs = os.scandir("NOT YET")
