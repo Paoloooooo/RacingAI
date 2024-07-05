@@ -16,8 +16,8 @@ Run command:
 pip install -r requirements.txt
 """
 
-from game.messages import ask_load_nn, ask_yes_no
 from app import App, load_json
+from game.messages import ask_load_nn, ask_yes_no
 from models.evolution import Entity
 
 # simulation settings

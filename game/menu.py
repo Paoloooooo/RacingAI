@@ -1,16 +1,16 @@
-import tkinter as tk
-from tkinter.ttk import *
+from tkinter import BOTH, CENTER, Checkbutton, Frame, Grid, Toplevel
+from tkinter.ttk import Button, Label, Spinbox
 
 
 class SettingsMenu:
     def __init__(self):
-        self.root = tk.Toplevel()
+        self.root = Toplevel()
         self.root.geometry("300x400")
         self.root.configure(bg="white")
 
         # self.root.protocol("WM_DELETE_WINDOW", self.quit)
 
-        self.frame = tk.Frame(self.root)
+        self.frame = Frame(self.root)
         self.frame.configure(bg="white")
 
         self.label = Label(
@@ -45,16 +45,16 @@ class SettingsMenu:
             ),
             "new_track_every_round": (
                 Label(self.frame, text="New track after every round"),
-                tk.Checkbutton(self.frame),
+                Checkbutton(self.frame),
             ),
         }
 
         # grid config
         for row in range(10):
-            tk.Grid.rowconfigure(self.frame, row, weight=1)
+            Grid.rowconfigure(self.frame, row, weight=1)
         for col in range(2):
-            tk.Grid.columnconfigure(self.frame, col, weight=2)
-        tk.Grid.columnconfigure(self.frame, 2, weight=1)
+            Grid.columnconfigure(self.frame, col, weight=2)
+        Grid.columnconfigure(self.frame, 2, weight=1)
 
         self._place_widgets()
 
@@ -77,7 +77,7 @@ class SettingsMenu:
             self.widgets["new_track_every_round"][1].deselect()
 
     def _place_widgets(self):
-        self.frame.pack(anchor=tk.CENTER, fill=tk.BOTH, expand=True, padx=30, pady=30)
+        self.frame.pack(anchor=CENTER, fill=BOTH, expand=True, padx=30, pady=30)
         self.label.grid(row=0, column=0, columnspan=3)
         i = 1
         for key in ("new", "load", "save"):

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import pyglet
-
 import numpy as np
-from numpy import cos, sin, radians, sqrt, ones
-from models.neural_network import NeuralNetwork
-from .graphics import CarInfo, CarLabel
+import pyglet
+from numpy import cos, ones, radians, sin, sqrt
 
+from models.neural_network import NeuralNetwork
 from models.objects import Result
+
+from .graphics import CarInfo, CarLabel
 
 
 # finds intersection between two LINE SEGMENTS
@@ -199,7 +199,7 @@ class Simulation:
     def behave(self, dt):
         inactive = True
         for car in self.cars:
-            if car.active == True:
+            if car.active:
                 inactive = False
                 # get nn input
                 inp = self.get_car_input(car)
@@ -255,7 +255,7 @@ class Track:
         self.spawn_index = spawn_index
 
         self.spawn_angle = spawn_angle
-        if self.spawn_angle == None:
+        if self.spawn_angle is None:
             self.spawn_angle = angle_between(
                 self.cps_arr[self.spawn_index], self.cps_arr[self.spawn_index + 1]
             )
@@ -273,10 +273,13 @@ class Track:
         :param nodes: shape (left/right, n, x/y)
         :return: cps: point in the center with shape (n, xy)
         """
-        center_point = lambda gate: [
-            (gate[0, 0] + gate[1, 0]) // 2,
-            (gate[0, 1] + gate[1, 1]) // 2,
-        ]
+
+        def center_point(gate):
+            return [
+                (gate[0, 0] + gate[1, 0]) // 2,
+                (gate[0, 1] + gate[1, 1]) // 2,
+            ]
+
         return np.array([center_point(nodes[:, i, :]) for i in range(nodes.shape[1])])
 
     def change_scale(self, scale):
@@ -369,7 +372,7 @@ class Car:
 
     # tick
     def update(self):
-        if self.active == True:
+        if self.active:
             self.xpos += cos(radians(self.angle)) * self.speed
             self.ypos += sin(radians(self.angle)) * self.speed
 

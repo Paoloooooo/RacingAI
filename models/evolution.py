@@ -1,5 +1,6 @@
-from models.neural_network import NeuralNetwork
 import json
+
+from models.neural_network import NeuralNetwork
 from models.objects import Result
 
 

@@ -1,19 +1,30 @@
 # -*- coding: utf-8 -*-
 
-from pyglet.gl import *
+import json
+import os
+
+from pyglet.gl import (
+    GL_MODELVIEW,
+    GL_PROGRAM_POINT_SIZE_EXT,
+    GL_PROJECTION,
+    glBlendFunc,
+    glEnable,
+    glLineWidth,
+    glLoadIdentity,
+    glMatrixMode,
+    glPopMatrix,
+    glPushMatrix,
+    glViewport,
+    pyglet,
+)
 from pyglet.window import key
 
-import os
-import json
-
-from constants import TILES_PATH, CARS_PATH, ASSETS_PATH, FONTS_PATH
-
-from game.graphics import Graphics
+from constants import ASSETS_PATH, CARS_PATH, FONTS_PATH, TILES_PATH
 from game.core import Simulation, Track
-from game.messages import *
+from game.graphics import Graphics
+from game.messages import ask_save_nn_as, show_error, show_message
 from game.tiles import TileManager
-
-from models.evolution import Evolution, Entity
+from models.evolution import Entity, Evolution
 
 
 # load .json file
@@ -22,8 +33,8 @@ def load_json(directory):
         with open(directory) as json_file:
             file = json.load(json_file)
         return file
-    except:
-        print("Failed to load: %s" % directory)
+    except Exception as e:
+        print(f"Failed to load: {directory} (Raised exception: {e})")
         return False
 
 
@@ -73,8 +84,8 @@ class App:
         try:
             icon = pyglet.image.load(os.path.join(ASSETS_PATH, "icon.ico"))
             self.window.set_icon(icon)
-        except:
-            print("Error >>> Loading icon")
+        except Exception as e:
+            print(f"Error >>> Loading icon (Raised exception: {e})")
 
         ### MODULES ###
         self.entity = None

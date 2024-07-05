@@ -1,9 +1,26 @@
 # -*- coding: utf-8 -*-
 
-import pyglet
-from pyglet.gl import *
-import numpy as np
 import os
+
+import numpy as np
+import pyglet
+from pyglet.gl import (
+    GL_COLOR_BUFFER_BIT,
+    GL_LINE_LOOP,
+    GL_LINES,
+    GL_TRIANGLE_FAN,
+    glBegin,
+    glClear,
+    glClearColor,
+    glColor3f,
+    glColor4f,
+    glEnd,
+    glLoadIdentity,
+    glOrtho,
+    glPopMatrix,
+    glPushMatrix,
+    glVertex2f,
+)
 
 # colors
 WHITE = (255, 255, 255, 255)
@@ -132,8 +149,8 @@ class HUD:
         try:
             pyglet.font.add_file(os.path.join(font_path, "Comfortaa-Bold.ttf"))
             pyglet.font.add_file(os.path.join(font_path, "Comfortaa-Regular.ttf"))
-        except:
-            print("Error >> loading font")
+        except Exception as e:
+            print(f"Error >> loading font (Raised exception: {e})")
 
         # LABELS
         labels_init_dict = {

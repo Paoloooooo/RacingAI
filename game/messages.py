@@ -1,5 +1,4 @@
-from tkinter import *
-from tkinter import filedialog, messagebox
+from tkinter import Tk, filedialog, messagebox
 
 
 def open_menu():

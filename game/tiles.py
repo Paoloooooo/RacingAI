@@ -1,8 +1,10 @@
+import os
+
 import numpy as np
+import pyglet
 from PIL import Image
 from PIL.Image import FLIP_TOP_BOTTOM
-import os
-import pyglet
+
 from .core import Track
 
 """
@@ -353,8 +355,10 @@ class TileManager:
                     try:
                         # print(f"{os.path.basename(dir)} {img}")
                         tiles.append(Tile(arr, inp, out, image=img))
-                    except:
-                        print(f"Error loading {os.path.basename(dir)}")
+                    except Exception as e:
+                        print(
+                            f"Error loading {os.path.basename(dir)} (Raised exception {e})"
+                        )
 
         self.tiles = self.variate_tiles(tiles)
         return tiles
