@@ -5,3 +5,6 @@ __pycache__
 # IDE stuff
 *.idea
 *.code-workspace
+
+# Windows stuff
+*.bat
