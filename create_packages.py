@@ -1,5 +1,10 @@
 import os
 
+"""
+This code is used to create __init__.py files in all subdirectories of a given directory, 
+making everything in that directory a package.
+"""
+
 
 def create_init_files(start_dir):
     for root, dirs, files in os.walk(start_dir):
